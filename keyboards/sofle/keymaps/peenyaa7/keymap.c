@@ -3,7 +3,7 @@
 
 
 enum sofle_layers {
-    _QWERTY, 
+    _QWERTY,
     _GAMER,
     _LOWER,
     _RAISE,
@@ -17,9 +17,16 @@ enum custom_keycodes {
     KC_NXTWD,
     KC_LSTRT,
     KC_LEND,
-    KC_DLINE
+    KC_DLINE,
+    KC_NXTHSV // Cambia entre Hue, Saturation y Value (para el encoder)
 };
 
+// Variables para el control de ventanas (encoder)
+bool is_alt_tab_active = false;
+uint16_t alt_tab_timer = 0;
+
+// Variables para el control de RGB (encoder)
+uint8_t hsv_selected = 0; // 0: Hue, 1: Saturation, 2: Value
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* QWERTY */
@@ -36,7 +43,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   SFT_T(KC_CAPS),   ES_A,  ES_S,     ES_D,     ES_F,     ES_G,                  /**/             ES_H,        ES_J,     ES_K,     ES_L,    ES_NTIL,  ES_ACUT,
 /* |------+------+------+------+------+------| PRINT |    | PAUSE |------+------+------+------+------+------| */
 /* |LCtrl |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   -  |RCtrl | */
-  KC_LCTL,          ES_Z,  ES_X,     ES_C,     ES_V,     ES_B,        KC_PSCR,  /**/   KC_MPLY,  ES_N,        ES_M,     ES_COMM,  ES_DOT,  ES_MINS,  RCTL_T(KC_ENT),
+  KC_LCTL,          ES_Z,  ES_X,     ES_C,     ES_V,     ES_B,        KC_MPLY,  /**/   KC_PSCR,  ES_N,        ES_M,     ES_COMM,  ES_DOT,  ES_MINS,  RCTL_T(KC_ENT),
 /* `-----------------------------------------/       /     \      \-----------------------------------------' */
 /*                   | LAlt | LGUI |LOWER | /Space  /       \Enter \  |RAISE |BackSP| RGUI | */
                            KC_LGUI,  KC_LALT,  _______,  MO(_LOWER),  KC_SPC,   /**/   KC_SPC,   MO(_RAISE),  _______,  KC_RALT,  KC_APP
@@ -65,11 +72,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 [_GAMER] = LAYOUT(
-    KC_ESC, ES_1,  ES_2,     ES_3,     ES_4,     ES_5,                  /**/             ES_6,        ES_7,     ES_8,     ES_9,    ES_0,     KC_PSLS,
-  KC_TAB,           ES_Q,  ES_W,     ES_E,     ES_R,     ES_T,                  /**/             ES_Y,        ES_U,     ES_I,     ES_O,    ES_P,     KC_BSPC,
-  SFT_T(KC_CAPS),   ES_A,  ES_S,     ES_D,     ES_F,     ES_G,                  /**/             ES_H,        ES_J,     ES_K,     ES_L,    ES_NTIL,  ES_ACUT,
-  KC_LCTL,          ES_Z,  ES_X,     ES_C,     ES_V,     ES_B,        KC_PSCR,  /**/   KC_MPLY,  ES_N,        ES_M,     ES_COMM,  ES_DOT,  ES_MINS,  RCTL_T(KC_ENT),
-                           RGB_TOG,  KC_LALT,  _______,  MO(_LOWER),  KC_SPC,   /**/   KC_SPC,   MO(_RAISE),  _______,  KC_RALT,  KC_APP
+  KC_ESC        ,  ES_1,  ES_2,     ES_3,     ES_4,     ES_5,                  /**/             ES_6,        ES_7,     ES_8,     ES_9,    ES_0,     KC_PSLS,
+  KC_TAB        ,  ES_Q,  ES_W,     ES_E,     ES_R,     ES_T,                  /**/             ES_Y,        ES_U,     ES_I,     ES_O,    ES_P,     KC_BSPC,
+  SFT_T(KC_CAPS),  ES_A,  ES_S,     ES_D,     ES_F,     ES_G,                  /**/             ES_H,        ES_J,     ES_K,     ES_L,    ES_NTIL,  ES_ACUT,
+  KC_LCTL       ,  ES_Z,  ES_X,     ES_C,     ES_V,     ES_B,        KC_MPLY,  /**/   KC_PSCR,  ES_N,        ES_M,     ES_COMM,  ES_DOT,  ES_MINS,  RCTL_T(KC_ENT),
+                          RGB_TOG,  KC_LALT,  _______,  MO(_LOWER),  KC_SPC,   /**/   KC_SPC,   MO(_RAISE),  _______,  KC_RALT,  KC_APP
 ),
 /*
  * SIMBOLS PEÑA (LOWER)
@@ -87,11 +94,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `---------------------------'-------'           '------''---------------------------'
  */
 [_LOWER] = LAYOUT(
-  MT(ES_FORD, ES_MORD),  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,  XXXXXXX,                   XXXXXXX,   XXXXXXX,   XXXXXXX,  XXXXXXX, ES_PIPE, ES_BSLS,
-  XXXXXXX,  XXXXXXX,  ES_EURO,  ES_HASH,  ES_QUOT,  ES_DQUO,                       ES_LPRN,    ES_RPRN,    ES_IEXL,    ES_EXLM,    ES_ASTR,  KC_DEL,
-  XXXXXXX, XXXXXXX,   ES_AT, ES_DLR,  ES_AMPR, ES_PERC,                       ES_LBRC, ES_RBRC, ES_IQUE, ES_QUES, ES_PLUS, ES_GRV,
-  XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, ES_LABK, ES_RABK, XXXXXXX,       XXXXXXX, ES_LCBR, ES_RCBR, ES_SCLN, ES_COLN, ES_UNDS, ES_EQL,
-                       XXXXXXX, XXXXXXX, XXXXXXX, _______, XXXXXXX,       XXXXXXX, _______, XXXXXXX, XXXXXXX, XXXXXXX
+  MT(ES_FORD, ES_MORD),  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,                        XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  ES_PIPE,  ES_BSLS,
+  XXXXXXX             ,  XXXXXXX,  ES_EURO,  ES_HASH,  ES_QUOT,  ES_DQUO,                        ES_LPRN,  ES_RPRN,  ES_IEXL,  ES_EXLM,  ES_ASTR,  KC_DEL,
+  XXXXXXX             ,  XXXXXXX,  ES_AT  ,  ES_DLR ,  ES_AMPR,  ES_PERC,                        ES_LBRC,  ES_RBRC,  ES_IQUE,  ES_QUES,  ES_PLUS,  ES_GRV,
+  XXXXXXX             ,  XXXXXXX,  XXXXXXX,  XXXXXXX,  ES_LABK,  ES_RABK,  RGB_TOG,  KC_NXTHSV,  ES_LCBR,  ES_RCBR,  ES_SCLN,  ES_COLN,  ES_UNDS,  ES_EQL,
+                                   XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,  XXXXXXX,  XXXXXXX  ,  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX
 ),
 /*
  * NAVIGATION PEÑA (RAISE)
@@ -109,11 +116,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `---------------------------'-------'           '------''---------------------------'
  */
 [_RAISE] = LAYOUT(
-  KC_F1, KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6,                           KC_F7,  KC_F8  , KC_F9,  KC_F10 ,  KC_F11 ,KC_F12,
-  _______,  XXXXXXX,  RGB_MOD,   RGB_TOG,  RGB_RMOD, XXXXXXX,                        KC_HOME, KC_PRVWD,   KC_UP, KC_NXTWD, XXXXXXX, KC_DEL,
-  _______, XXXXXXX,  KC_MPRV,  KC_MPLY,  KC_MNXT, XXXXXXX,                       KC_END,  KC_LEFT, KC_DOWN, KC_RGHT,  XXXXXXX, KC_PGUP,
-  _______,KC_UNDO, KC_CUT, KC_COPY, KC_PASTE, XXXXXXX,  _______,       _______,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,   XXXXXXX, KC_PGDN,
-                         _______, _______, _______, _______, _______,       _______, _______, _______, _______, _______
+  KC_F1  ,  KC_F2  ,  KC_F3  ,  KC_F4  ,  KC_F5   ,  KC_F6  ,                      KC_F7  ,  KC_F8   ,  KC_F9  ,  KC_F10  ,  KC_F11 ,  KC_F12,
+  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX ,  XXXXXXX,                      KC_HOME,  KC_PRVWD,  KC_UP  ,  KC_NXTWD,  XXXXXXX,  KC_DEL,
+  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX ,  XXXXXXX,                      KC_END ,  KC_LEFT ,  KC_DOWN,  KC_RGHT ,  XXXXXXX,  KC_PGUP,
+  _______,  KC_UNDO,  KC_CUT ,  KC_COPY,  KC_PASTE,  XXXXXXX,  _______,  _______,  XXXXXXX,  XXXXXXX ,  XXXXXXX,  XXXXXXX ,  XXXXXXX,  KC_PGDN,
+                      _______,  _______,  _______ ,  _______,  _______,  _______,  _______,  _______ ,  _______,  _______
 ),
 /* ADJUST
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -129,35 +136,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
  *            `----------------------------------'           '------''---------------------------'
  */
-  [_ADJUST] = LAYOUT(
-  XXXXXXX , XXXXXXX,  XXXXXXX ,  XXXXXXX , XXXXXXX, XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  QK_BOOT  , XXXXXXX, KC_QWERTY, KC_GAMER, XXXXXXX,XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  CG_TOGG , XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,  XXXXXXX,                     XXXXXXX, KC_VOLD, KC_MUTE, KC_VOLU, XXXXXXX, XXXXXXX,
-  XXXXXXX , XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,  XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT, XXXXXXX, XXXXXXX,
-                   _______, _______, _______, _______, _______,     _______, _______, _______, _______, _______
+[_ADJUST] = LAYOUT(
+  QK_RBT ,  KC_QWERTY,  KC_GAMER,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+                        _______ ,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______
   )
 };
 
 
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    int layer = biton32(state);
-    switch (layer) {
-        case _QWERTY:
-            rgblight_setrgb(0xFF, 0xFF, 0xFF);
-            break;
-        case _LOWER:
-            rgblight_setrgb(0xFF, 0x00, 0x00);
-            break;
-        case _RAISE:
-            rgblight_setrgb(0x00, 0xFF, 0x00);
-            break;
-        case _ADJUST:
-            rgblight_setrgb(0x00, 0x00, 0xFF);
-            break;
-        case _GAMER:
-            rgblight_setrgb(0xFF, 0x00, 0xFF);
-    }
     return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
@@ -293,6 +283,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_Z);
             }
             return false;
+        case KC_NXTHSV:
+            hsv_selected++;
+            if (hsv_selected > 2) {
+                hsv_selected = 0;
+            }
+            break;
     }
     return true;
 }
