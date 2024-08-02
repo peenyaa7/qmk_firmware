@@ -90,23 +90,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /*
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |  º   |      |      |      |      |      |        Layer:      |      |      |      |      |   |  |  \   |
- * |------+------+------+------+------+------|        LOWER       |------+------+------+------+------+------|
- * |      |      |  €   |  #   |   '  |   "  |       (Symbols)    |   (  |   )  |   ¡  |  !   |   *  | Supr |
+ * |      |      |      |      |      |      |       Layer:       |      |      |      |      |   |  |  \   |
+ * |------+------+------+------+------+------|       LOWER        |------+------+------+------+------+------|
+ * |      |  º   |  &   |  €   |  '   |  "   |      (Symbols)     |   (  |   )  |   ¡  |  !   |   *  | Supr |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |      |      |  @   |  $   |   &  |   %  |-------.    ,-------|   [  |   ]  |   ¿  |   ?   |   +  |  `   |
+ * |      |  @   |  $   |  #   |  %   |  ¬   |-------.    ,-------|   [  |   ]  |   ¿  |   ?   |   +  |  `   |
  * |------+------+------+------+------+------|RGB_TOG|    |NXTHSV |------+------+------+------+------+------|
- * |      |      |      |      |   <  |   >  |-------|    |-------|   {  |   }  |   ;  |  :  |  _   |  =   |
+ * |      |  ¨   |  ~   |  ^   |  <   |  >   |-------|    |-------|   {  |   }  |   ;  |  :  |  _   |  =   |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |      |      |      |LOWER | /       /       \      \  |RAISE |      |      |      |
  *            |      |      |      |  👆  |/       /         \      \ |      |      |      |      |
  *            `---------------------------'-------'           '------''---------------------------'
  */
 [_LOWER] = LAYOUT(
-  MT(ES_FORD, ES_MORD),  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,                        XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  ES_PIPE,  ES_BSLS,
-  XXXXXXX             ,  XXXXXXX,  ES_EURO,  ES_HASH,  ES_QUOT,  ES_DQUO,                        ES_LPRN,  ES_RPRN,  ES_IEXL,  ES_EXLM,  ES_ASTR,  KC_DEL,
-  XXXXXXX             ,  XXXXXXX,  ES_AT  ,  ES_DLR ,  ES_AMPR,  ES_PERC,                        ES_LBRC,  ES_RBRC,  ES_IQUE,  ES_QUES,  ES_PLUS,  ES_GRV,
-  XXXXXXX             ,  XXXXXXX,  XXXXXXX,  XXXXXXX,  ES_LABK,  ES_RABK,  RGB_TOG,  KC_NXTHSV,  ES_LCBR,  ES_RCBR,  ES_SCLN,  ES_COLN,  ES_UNDS,  ES_EQL,
+  XXXXXXX,  XXXXXXX             ,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,                        XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  ES_PIPE,  ES_BSLS,
+  XXXXXXX,  MT(ES_FORD, ES_MORD),  ES_AMPR,  ES_EURO,  ES_QUOT,  ES_DQUO,                        ES_LPRN,  ES_RPRN,  ES_IEXL,  ES_EXLM,  ES_ASTR,  KC_DEL,
+  XXXXXXX,  ES_AT               ,  ES_DLR ,  ES_HASH,  ES_PERC,  ES_NOT ,                        ES_LBRC,  ES_RBRC,  ES_IQUE,  ES_QUES,  ES_PLUS,  ES_GRV,
+  XXXXXXX,  ES_DIAE             ,  ES_TILD,  ES_CIRC,  ES_LABK,  ES_RABK,  RGB_TOG,  KC_NXTHSV,  ES_LCBR,  ES_RCBR,  ES_SCLN,  ES_COLN,  ES_UNDS,  ES_EQL,
                                    XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,  XXXXXXX,  XXXXXXX  ,  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX
 ),
 
@@ -144,8 +144,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /*
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * | Reb. | Qwer |Gamer |      |      |      |       Layer:       |      |      |      |      |      |      |
- * |------+------+------+------+------+------|       ADJUST       |------+------+------+------+------+------|
+ * | Reb. |Layer |Layer |      |      |      |       Layer:       |      |      |      |      |      |      |
+ * |      |Qwerty|Gamer |      |      |      |       ADJUST       |      |      |      |      |      |      |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |      |      |      |-------.    ,-------|      |      |      |      |      |      |
