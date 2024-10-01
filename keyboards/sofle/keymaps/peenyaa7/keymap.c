@@ -17,9 +17,9 @@ enum custom_keycodes {
     KC_GAMER,
     KC_PRVWD,
     KC_NXTWD,
-    KC_LSTRT,
-    KC_LEND,
-    KC_DLINE,
+    // KC_LSTRT,
+    // KC_LEND,
+    // KC_DLINE,
     KC_NXTHSV // Cambia entre Hue, Saturation y Value (para el encoder)
 };
 
@@ -152,18 +152,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |  ?   |      |      |      |      |      |-------.    ,-------| Fin  |   ◀  |  🔽  |  ▶   |      | PGUP |
  * |------+------+------+------+------+------|   ?   |    |   ?   |------+------+------+------+------+------|
- * |  ?   | Undo |  Cut | Copy |Paste |      |-------|    |-------|      |      |      |      |      | PGDN |
+ * |  ?   |      |      |      |      |      |-------|    |-------|      |      |      |      |      | PGDN |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *            |  ?   |  ?   |  ?   |LOWER | /   ?   /       \  ?   \  |RAISE |  ?   |  ?   |  ?   |
  *            |      |      |      |      |/       /         \      \ |  👆  |      |      |      |
  *            `---------------------------'-------'           '------''---------------------------'
  */
 [_RAISE] = LAYOUT(
-  KC_F1  ,  KC_F2  ,  KC_F3  ,  KC_F4  ,  KC_F5   ,  KC_F6  ,                      KC_F7  ,  KC_F8   ,  KC_F9  ,  KC_F10  ,  KC_F11 ,  KC_F12,
-  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX ,  XXXXXXX,                      KC_HOME,  KC_PRVWD,  KC_UP  ,  KC_NXTWD,  XXXXXXX,  KC_DEL,
-  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX ,  XXXXXXX,                      KC_END ,  KC_LEFT ,  KC_DOWN,  KC_RGHT ,  XXXXXXX,  KC_PGUP,
-  _______,  KC_UNDO,  KC_CUT ,  KC_COPY,  KC_PASTE,  XXXXXXX,  _______,  _______,  XXXXXXX,  XXXXXXX ,  XXXXXXX,  XXXXXXX ,  XXXXXXX,  KC_PGDN,
-                      _______,  _______,  _______ ,  _______,  _______,  _______,  _______,  _______ ,  _______,  _______
+  KC_F1  ,  KC_F2  ,  KC_F3  ,  KC_F4  ,  KC_F5  ,  KC_F6  ,                      KC_F7  ,  KC_F8   ,  KC_F9  ,  KC_F10  ,  KC_F11 ,  KC_F12,
+  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      KC_HOME,  KC_PRVWD,  KC_UP  ,  KC_NXTWD,  XXXXXXX,  KC_DEL,
+  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      KC_END ,  KC_LEFT ,  KC_DOWN,  KC_RGHT ,  XXXXXXX,  KC_PGUP,
+  _______,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,  _______,  XXXXXXX,  XXXXXXX ,  XXXXXXX,  XXXXXXX ,  XXXXXXX,  KC_PGDN,
+                      _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______ ,  _______,  _______
 ),
 
 
@@ -203,6 +203,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
+/**
+ * @return false if we dont wanna execute key, true otherwise (true for extending functionability, false to replace it)
+*/
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         // Tecla para cambiar a la capa QWERTY
@@ -229,105 +232,103 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // Tecla para ir a la palabra anterior
         case KC_PRVWD:
             if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
+                if (!is_windows_selected) {
                     register_mods(mod_config(MOD_LALT));
-                    register_code(KC_LEFT);
                 } else {
                     register_mods(mod_config(MOD_LCTL));
-                    register_code(KC_LEFT);
                 }
+                register_code(KC_LEFT);
             } else {
-                if (keymap_config.swap_lctl_lgui) {
+                if (!is_windows_selected) {
                     unregister_mods(mod_config(MOD_LALT));
-                    unregister_code(KC_LEFT);
                 } else {
                     unregister_mods(mod_config(MOD_LCTL));
-                    unregister_code(KC_LEFT);
                 }
+                unregister_code(KC_LEFT);
             }
-            break;
+            return false;
 
         // Tecla para ir a la palabra siguiente
         case KC_NXTWD:
              if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
+                if (!is_windows_selected) {
                     register_mods(mod_config(MOD_LALT));
-                    register_code(KC_RIGHT);
                 } else {
                     register_mods(mod_config(MOD_LCTL));
-                    register_code(KC_RIGHT);
                 }
+                register_code(KC_RIGHT);
             } else {
-                if (keymap_config.swap_lctl_lgui) {
+                if (!is_windows_selected) {
                     unregister_mods(mod_config(MOD_LALT));
-                    unregister_code(KC_RIGHT);
                 } else {
                     unregister_mods(mod_config(MOD_LCTL));
-                    unregister_code(KC_RIGHT);
                 }
+                unregister_code(KC_RIGHT);
             }
-            break;
+            return false;
 
         
-        case KC_LSTRT:
-            if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
-                     //CMD-arrow on Mac, but we have CTL and GUI swapped
-                    register_mods(mod_config(MOD_LCTL));
-                    register_code(KC_LEFT);
-                } else {
-                    register_code(KC_HOME);
-                }
-            } else {
-                if (keymap_config.swap_lctl_lgui) {
-                    unregister_mods(mod_config(MOD_LCTL));
-                    unregister_code(KC_LEFT);
-                } else {
-                    unregister_code(KC_HOME);
-                }
-            }
-            break;
-        case KC_LEND:
-            if (record->event.pressed) {
-                if (keymap_config.swap_lctl_lgui) {
-                    //CMD-arrow on Mac, but we have CTL and GUI swapped
-                    register_mods(mod_config(MOD_LCTL));
-                    register_code(KC_RIGHT);
-                } else {
-                    register_code(KC_END);
-                }
-            } else {
-                if (keymap_config.swap_lctl_lgui) {
-                    unregister_mods(mod_config(MOD_LCTL));
-                    unregister_code(KC_RIGHT);
-                } else {
-                    unregister_code(KC_END);
-                }
-            }
-            break;
-        case KC_DLINE:
-            if (record->event.pressed) {
-                register_mods(mod_config(MOD_LCTL));
-                register_code(KC_BSPC);
-            } else {
-                unregister_mods(mod_config(MOD_LCTL));
-                unregister_code(KC_BSPC);
-            }
-            break;
+        // case KC_LSTRT:
+        //     if (record->event.pressed) {
+        //         if (!is_windows_selected) {
+        //              //CMD-arrow on Mac, but we have CTL and GUI swapped
+        //             register_mods(mod_config(MOD_LCTL));
+        //             register_code(KC_LEFT);
+        //         } else {
+        //             register_code(KC_HOME);
+        //         }
+        //     } else {
+        //         if (!is_windows_selected) {
+        //             unregister_mods(mod_config(MOD_LCTL));
+        //             unregister_code(KC_LEFT);
+        //         } else {
+        //             unregister_code(KC_HOME);
+        //         }
+        //     }
+        //     break;
+        // case KC_LEND:
+        //     if (record->event.pressed) {
+        //         if (!is_windows_selected) {
+        //             //CMD-arrow on Mac, but we have CTL and GUI swapped
+        //             register_mods(mod_config(MOD_LCTL));
+        //             register_code(KC_RIGHT);
+        //         } else {
+        //             register_code(KC_END);
+        //         }
+        //     } else {
+        //         if (!is_windows_selected) {
+        //             unregister_mods(mod_config(MOD_LCTL));
+        //             unregister_code(KC_RIGHT);
+        //         } else {
+        //             unregister_code(KC_END);
+        //         }
+        //     }
+        //     break;
+        // case KC_DLINE:
+        //     if (record->event.pressed) {
+        //         register_mods(mod_config(MOD_LCTL));
+        //         register_code(KC_BSPC);
+        //     } else {
+        //         unregister_mods(mod_config(MOD_LCTL));
+        //         unregister_code(KC_BSPC);
+        //     }
+        //     break;
 
         // Tecla para copiar
         case KC_COPY:
             if (record->event.pressed) {
+                is_windows_selected = !is_windows_selected;
                 register_mods(mod_config(MOD_LCTL));
                 register_code(KC_C);
             } else {
                 unregister_mods(mod_config(MOD_LCTL));
                 unregister_code(KC_C);
             }
-            return false;
+            return false; 
 
         case KC_PASTE:
             if (record->event.pressed) {
+                is_windows_selected = !is_windows_selected;
                 register_mods(mod_config(MOD_LCTL));
                 register_code(KC_V);
             } else {
@@ -339,6 +340,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // Tecla para cortar
         case KC_CUT:
             if (record->event.pressed) {
+                is_windows_selected = !is_windows_selected;
                 register_mods(mod_config(MOD_LCTL));
                 register_code(KC_X);
             } else {
@@ -350,6 +352,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // Tecla para deshacer
         case KC_UNDO:
             if (record->event.pressed) {
+                is_windows_selected = !is_windows_selected;
                 register_mods(mod_config(MOD_LCTL));
                 register_code(KC_Z);
             } else {
@@ -364,9 +367,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (hsv_selected > 2) {
                 hsv_selected = 0;
             }
-            break;
+            return false;
+        default:
+            return true;
     }
-    return true;
 }
 
 #include "key_overrides.c"
