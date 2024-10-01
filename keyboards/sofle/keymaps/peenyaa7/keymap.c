@@ -5,6 +5,7 @@
 enum sofle_layers {
     _QWERTY,
     _GAMER,
+    _MAC,
     _LOWER,
     _RAISE,
     _ADJUST,
@@ -12,6 +13,7 @@ enum sofle_layers {
 
 enum custom_keycodes {
     KC_QWERTY = SAFE_RANGE,
+    KC_OS,
     KC_GAMER,
     KC_PRVWD,
     KC_NXTWD,
@@ -27,6 +29,9 @@ uint16_t alt_tab_timer = 0;
 
 // Variables para el control de RGB (encoder)
 uint8_t hsv_selected = 0; // 0: Hue, 1: Saturation, 2: Value
+
+// Variables para el control de OS (windows/mac)
+bool is_windows_selected = true;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -84,6 +89,30 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                           RGB_TOG,  KC_LALT,  _______,  MO(_LOWER),  KC_SPC,   /**/   KC_SPC,   MO(_RAISE),  _______,  KC_RALT,  KC_APP
 ),
 
+/* --------------------------------------------------------------------------------------------------------- */
+
+/*
+ * ,-----------------------------------------.                    ,-----------------------------------------.
+ * | ESC  |   1  |   2  |   3  |   4  |   5  |       Layer:       |   6  |   7  |   8  |   9  |   0  |  /   |
+ * |------+------+------+------+------+------|         MAC        |------+------+------+------+------+------|
+ * | Tab  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  | Bspc |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |BMyus |   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   Ñ  |  ´   |
+ * |/Shift|      |      |      |      |      | PLAY/ |    | PRINT |      |      |      |      |      |      |
+ * |------+------+------+------+------+------| PAUSE |    | SCREE |------+------+------+------+------+------|
+ * |LCtrl |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   -  |Enter |
+ * `-----------------------------------------/       /     \      \-----------------------------------------'
+ *            | Win  | LAlt |  ?   |LOWER | / Space /       \ Space\  |RAISE |  ?   | RAlt | Menu |
+ *            |      |      |      |      |/       /         \      \ |      |      |      |      |
+ *            `---------------------------'-------'           '------''---------------------------'
+ */
+// [_MAC] = LAYOUT(
+//   KC_ESC        ,  ES_1,  ES_2,     ES_3,     ES_4,     ES_5,                  /**/             ES_6,        ES_7,     ES_8,     ES_9,    ES_0,     KC_PSLS,
+//   KC_TAB        ,  ES_Q,  ES_W,     ES_E,     ES_R,     ES_T,                  /**/             ES_Y,        ES_U,     ES_I,     ES_O,    ES_P,     KC_BSPC,
+//   SFT_T(KC_CAPS),  ES_A,  ES_S,     ES_D,     ES_F,     ES_G,                  /**/             ES_H,        ES_J,     ES_K,     ES_L,    ES_NTIL,  ES_ACUT,
+//   KC_LCTL       ,  ES_Z,  ES_X,     ES_C,     ES_V,     ES_B,        KC_MPLY,  /**/   KC_PSCR,  ES_N,        ES_M,     ES_COMM,  ES_DOT,  ES_MINS,  RCTL_T(KC_ENT),
+//                           KC_LGUI,  KC_LALT,  _______,  MO(_LOWER),  KC_SPC,   /**/   KC_SPC,   MO(_RAISE),  _______,  KC_RALT,  KC_APP
+// ),
 
 /* --------------------------------------------------------------------------------------------------------- */
 
@@ -144,8 +173,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /*
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * | Reb. |Layer |Layer |      |      |      |       Layer:       |      |      |      |      |      |      |
- * |      |Qwerty|Gamer |      |      |      |       ADJUST       |      |      |      |      |      |      |
+ * | Reb. |Layer |Layer |Layer |      |      |       Layer:       |      |      |      |      |      |      |
+ * |      |Qwerty| OS   |Gamer |      |      |       ADJUST       |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -158,11 +187,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `----------------------------------'           '------''---------------------------'
  */
 [_ADJUST] = LAYOUT(
-  QK_RBT ,  KC_QWERTY,  KC_GAMER,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
-  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
-  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
-  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
-                        _______ ,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______
+  QK_RBT ,  KC_QWERTY,  KC_OS   ,  KC_GAMER,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,                      XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+  XXXXXXX,  XXXXXXX  ,  XXXXXXX ,  XXXXXXX ,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,
+                        _______ ,  _______ ,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______
   )
 };
 
@@ -176,16 +205,28 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        // Tecla para cambiar a la capa QWERTY
         case KC_QWERTY:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_QWERTY);
             }
             return false;
+
+        // Tecla para cambiar de sistema operativo (windows/mac)
+        case KC_OS:
+            if (record->event.pressed) {
+                is_windows_selected = !is_windows_selected;
+            }
+            return false;
+
+        // Tecla para cambiar a la capa gamer
         case KC_GAMER:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_GAMER);
             }
             return false;
+
+        // Tecla para ir a la palabra anterior
         case KC_PRVWD:
             if (record->event.pressed) {
                 if (keymap_config.swap_lctl_lgui) {
@@ -205,6 +246,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
+
+        // Tecla para ir a la palabra siguiente
         case KC_NXTWD:
              if (record->event.pressed) {
                 if (keymap_config.swap_lctl_lgui) {
@@ -224,6 +267,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
+
+        
         case KC_LSTRT:
             if (record->event.pressed) {
                 if (keymap_config.swap_lctl_lgui) {
@@ -269,6 +314,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_BSPC);
             }
             break;
+
+        // Tecla para copiar
         case KC_COPY:
             if (record->event.pressed) {
                 register_mods(mod_config(MOD_LCTL));
@@ -278,6 +325,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_C);
             }
             return false;
+
         case KC_PASTE:
             if (record->event.pressed) {
                 register_mods(mod_config(MOD_LCTL));
@@ -287,6 +335,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_V);
             }
             return false;
+
+        // Tecla para cortar
         case KC_CUT:
             if (record->event.pressed) {
                 register_mods(mod_config(MOD_LCTL));
@@ -296,7 +346,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_X);
             }
             return false;
-            break;
+
+        // Tecla para deshacer
         case KC_UNDO:
             if (record->event.pressed) {
                 register_mods(mod_config(MOD_LCTL));
@@ -306,6 +357,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_Z);
             }
             return false;
+
+        // Tecla para seleccionar el siguiente modo (H -> S -> V)
         case KC_NXTHSV:
             hsv_selected++;
             if (hsv_selected > 2) {
@@ -316,6 +369,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-
+#include "key_overrides.c"
 #include "encoder.c"
 #include "oled.c"

@@ -40,12 +40,19 @@ for more options.
 
     #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
 
+    #define RGBLIGHT_ANIMATIONS
+    
     #define RGBLIGHT_EFFECT_BREATHING
     #define RGBLIGHT_EFFECT_RAINBOW_MOOD
     #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
     #define RGBLIGHT_EFFECT_KNIGHT
     #define RGBLIGHT_EFFECT_CHRISTMAS
     #define RGBLIGHT_EFFECT_TWINKLE
+
+    #undef RGBLIGHT_EFFECT_SNAKE
+    #undef RGBLIGHT_EFFECT_STATIC_GRADIENT
+    #undef RGBLIGHT_EFFECT_RGB_TEST
+    #undef RGBLIGHT_EFFECT_ALTERNATING
 
 #endif
 
@@ -56,7 +63,7 @@ for more options.
 
 #define ENCODER_DIRECTION_FLIP
 #undef  ENCODER_RESOLUTION
-#define ENCODER_RESOLUTION 2
+#define ENCODER_RESOLUTION 1
 
 // ##############################
 // #          OTHERS            #

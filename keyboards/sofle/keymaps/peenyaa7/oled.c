@@ -153,7 +153,11 @@ static void render_master_oled(void) {
         case _GAMER:
             switch (get_highest_layer(default_layer_state)) {
                 case _QWERTY:
-                    oled_write_P(PSTR("FOXY!"), false);
+                    if (is_windows_selected) {
+                        oled_write_P(PSTR("FOXY!"), false);
+                    } else {
+                        oled_write_P(PSTR("ZAZU!"), false);
+                    }
                     break;
                 case _GAMER:
                     oled_write_P(PSTR("GAMER"), false);
